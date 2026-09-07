@@ -1,0 +1,68 @@
+{
+  "forums": [
+    {
+      "forum_id": "linux-do",
+      "name": "Linux.do",
+      "enabled": true,
+      "source_type": "rss",
+      "rss_url": "https://linux.do/latest.rss",
+      "fetch_interval": 60,
+      "skip_first_run": true,
+      "notifiers": [
+        {
+          "notifier_type": "telegram",
+          "enabled": true,
+          "telegram_bot_token": "123456789:AAFxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+          "max_retries": 3,
+          "retry_delay": 2.0,
+          "concurrency": 5,
+          "timeout": 15
+        },
+        {
+          "notifier_type": "feishu",
+          "enabled": true,
+          "feishu_webhook_url": "https://open.feishu.cn/open-apis/bot/v2/hook/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+          "feishu_mode": "broadcast",
+          "feishu_keywords": ["Docker", "NAS", "求助"],
+          "feishu_push_all": false,
+          "max_retries": 3,
+          "retry_delay": 2.0,
+          "timeout": 15
+        }
+      ]
+    },
+    {
+      "forum_id": "linux-do-discourse",
+      "name": "Linux.do（Discourse API）",
+      "enabled": false,
+      "source_type": "discourse",
+      "discourse_url": "https://linux.do",
+      "discourse_path": "/latest.json",
+      "discourse_cookie": "_t=你的cookie; _forum_session=xxx",
+      "flaresolverr_url": null,
+      "fallback_to_rss": true,
+      "rss_url": "https://linux.do/latest.rss",
+      "cookie_check_interval": 3600,
+      "fetch_interval": 60,
+      "skip_first_run": true,
+      "notifiers": [
+        {
+          "notifier_type": "feishu",
+          "enabled": true,
+          "feishu_webhook_url": "https://open.feishu.cn/open-apis/bot/v2/hook/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+          "feishu_keywords": ["白嫖", "优惠"]
+        }
+      ]
+    }
+  ],
+  "admin_chat_id": 123456789,
+  "web_password": "change-me",
+  "sql_admin_password": "change-me-too",
+  "web_port": 8080,
+  "log_cleanup_interval_seconds": 3600,
+  "log_retention_hours": 4,
+  "db_cleanup_interval_seconds": 43200,
+  "db_retention_hours": 24,
+  "database_path": "/data/monitor.db",
+  "log_dir": "/logs"
+}

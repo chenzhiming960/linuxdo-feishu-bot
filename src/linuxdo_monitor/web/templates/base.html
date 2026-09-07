@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}LinuxDo 监控管理{% endblock %}</title>
+  <style>
+    :root { color-scheme: light dark; }
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: -apple-system, "Segoe UI", "Microsoft YaHei", sans-serif;
+           background: #f5f6f8; color: #1f2328; }
+    header { background: #1f6feb; color: #fff; padding: 14px 24px; display: flex;
+             align-items: center; gap: 20px; flex-wrap: wrap; }
+    header a { color: #fff; text-decoration: none; opacity: .85; }
+    header a:hover { opacity: 1; text-decoration: underline; }
+    header .brand { font-weight: 600; font-size: 16px; }
+    main { max-width: 1080px; margin: 24px auto; padding: 0 16px; }
+    .card { background: #fff; border: 1px solid #d8dee4; border-radius: 8px;
+            padding: 16px 20px; margin-bottom: 20px; }
+    .card h2, .card h3 { margin-top: 0; }
+    table { border-collapse: collapse; width: 100%; }
+    th, td { border-bottom: 1px solid #e5e7eb; padding: 8px 10px; text-align: left;
+             font-size: 14px; vertical-align: top; }
+    th { background: #f3f4f6; font-weight: 600; }
+    label { display: block; font-size: 13px; margin: 8px 0 4px; color: #57606a; }
+    input[type=text], input[type=password], input[type=number], textarea, select {
+      width: 100%; padding: 7px 9px; border: 1px solid #d0d7de; border-radius: 6px;
+      font-size: 14px; font-family: inherit; }
+    textarea { min-height: 110px; font-family: ui-monospace, Consolas, monospace; }
+    button, .btn { background: #1f6feb; color: #fff; border: 0; border-radius: 6px;
+                   padding: 7px 14px; font-size: 14px; cursor: pointer; text-decoration: none;
+                   display: inline-block; }
+    button:hover, .btn:hover { background: #1a5fd0; }
+    button.secondary, .btn.secondary { background: #6e7781; }
+    button.danger { background: #cf222e; }
+    .row { display: flex; gap: 12px; flex-wrap: wrap; align-items: flex-end; }
+    .row > div { flex: 1 1 200px; }
+    .flash { padding: 10px 14px; border-radius: 6px; margin-bottom: 14px; font-size: 14px; }
+    .flash.success { background: #dafbe1; border: 1px solid #4ac26b; }
+    .flash.error { background: #ffebe9; border: 1px solid #ff8182; }
+    .muted { color: #6e7781; font-size: 13px; }
+    .badge { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 12px;
+             background: #eaeef2; }
+    .badge.ok { background: #dafbe1; } .badge.bad { background: #ffebe9; }
+    code { background: #f3f4f6; padding: 1px 5px; border-radius: 4px; }
+  </style>
+</head>
+<body>
+<header>
+  <span class="brand">🔔 LinuxDo 监控管理</span>
+  <a href="{{ url_for('config_page') }}">配置</a>
+  <a href="{{ url_for('users_page') }}">用户统计</a>
+  <a href="{{ url_for('sql_page') }}">SQL 查询</a>
+  <a href="{{ url_for('logout') }}">退出</a>
+</header>
+<main>
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% for category, message in messages %}
+      <div class="flash {{ category }}">{{ message }}</div>
+    {% endfor %}
+  {% endwith %}
+  {% block content %}{% endblock %}
+</main>
+</body>
+</html>

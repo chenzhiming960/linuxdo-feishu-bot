@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <title>登录 - LinuxDo 监控管理</title>
+  <style>
+    body { font-family: -apple-system, "Segoe UI", "Microsoft YaHei", sans-serif;
+           background: #f5f6f8; display: flex; align-items: center; justify-content: center;
+           height: 100vh; margin: 0; }
+    form { background: #fff; padding: 28px; border-radius: 10px; border: 1px solid #d8dee4;
+           width: 320px; }
+    h2 { margin: 0 0 16px; font-size: 18px; }
+    input { width: 100%; padding: 8px 10px; margin: 8px 0 14px; border: 1px solid #d0d7de;
+            border-radius: 6px; font-size: 14px; box-sizing: border-box; }
+    button { width: 100%; background: #1f6feb; color: #fff; border: 0; border-radius: 6px;
+             padding: 9px; font-size: 14px; cursor: pointer; }
+    .error { color: #cf222e; font-size: 13px; margin-bottom: 10px; }
+  </style>
+</head>
+<body>
+<form method="post">
+  <h2>🔐 管理登录</h2>
+  {% if error %}<div class="error">{{ error }}</div>{% endif %}
+  <input type="password" name="password" placeholder="管理密码" autofocus required>
+  <button type="submit">登录</button>
+</form>
+</body>
+</html>

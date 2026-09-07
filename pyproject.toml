@@ -1,0 +1,36 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "linuxdo-monitor"
+version = "1.0.0"
+description = "Linux.do 论坛多渠道监控与通知系统（飞书 + Telegram）"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "python-telegram-bot>=20.0",
+    "feedparser>=6.0",
+    "apscheduler>=3.10",
+    "pydantic>=2.0",
+    "click>=8.0",
+    "flask>=3.0",
+    "requests>=2.32.3",
+]
+
+[project.scripts]
+linuxdo-monitor = "linuxdo_monitor.cli:cli"
+
+[project.optional-dependencies]
+dev = ["pytest>=8.0", "pytest-asyncio>=0.24"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+linuxdo_monitor = ["web/templates/*.html"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"

@@ -1,2 +1,8 @@
-feedparser==6.0.11
-requests==2.32.3
+# 统一依赖见 pyproject.toml；此文件保留以便 `pip install -r requirements.txt` 直接部署
+python-telegram-bot>=20.0
+feedparser>=6.0
+apscheduler>=3.10
+pydantic>=2.0
+click>=8.0
+flask>=3.0
+requests>=2.32.3

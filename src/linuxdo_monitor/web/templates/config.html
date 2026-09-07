@@ -1,0 +1,119 @@
+{% extends "base.html" %}
+{% block title %}配置管理 - LinuxDo 监控{% endblock %}
+{% block content %}
+
+<div class="card">
+  <h2>配置文件</h2>
+  <p class="muted">路径：<code>{{ config_path or "（未指定，改动不会持久化）" }}</code></p>
+  <p class="muted">
+    数据库：<code>{{ config.database_path }}</code> ｜
+    日志目录：<code>{{ config.log_dir }}</code> ｜
+    管理员 chat_id：<code>{{ config.admin_chat_id or "未设置" }}</code>
+  </p>
+  <form method="post" action="{{ url_for('reload') }}">
+    <button class="secondary" type="submit">重新加载配置（热更新）</button>
+  </form>
+</div>
+
+{% for forum in config.forums %}
+<div class="card">
+  <h2>论坛：{{ forum.name }} <span class="badge">{{ forum.forum_id }}</span>
+    {% if forum.enabled %}<span class="badge ok">启用</span>{% else %}<span class="badge bad">停用</span>{% endif %}
+  </h2>
+
+  <form method="post" action="{{ url_for('update_forum', forum_id=forum.forum_id) }}">
+    <div class="row">
+      <div><label>名称</label><input type="text" name="name" value="{{ forum.name }}"></div>
+      <div><label>数据源类型</label><input type="text" value="{{ forum.source_type }}" disabled></div>
+      <div><label>轮询间隔（秒）</label><input type="number" name="fetch_interval" value="{{ forum.fetch_interval }}"></div>
+    </div>
+    <div><label>RSS 地址</label><input type="text" name="rss_url" value="{{ forum.rss_url or '' }}"></div>
+    <label><input type="checkbox" name="enabled" {% if forum.enabled %}checked{% endif %}> 启用该论坛</label>
+    <p><button type="submit">保存论坛配置</button></p>
+  </form>
+
+  <h3>通知渠道（{{ forum.notifiers | length }}）</h3>
+  <table>
+    <tr>
+      <th style="width:110px">渠道</th>
+      <th>配置</th>
+      <th style="width:220px">状态 / 操作</th>
+    </tr>
+    {% for n in forum.notifiers %}
+    <tr>
+      <td><span class="badge">{{ n.notifier_type }}</span></td>
+      <td>
+        {% if n.notifier_type == 'telegram' %}
+          Token：<code>{{ (n.telegram_bot_token or '')[:12] }}…</code>
+        {% elif n.notifier_type == 'feishu' %}
+          Webhook：<code>{{ (n.feishu_webhook_url or '')[:48] }}…</code><br>
+          模式：<code>{{ n.feishu_mode }}</code>
+          ｜推送全部：<code>{{ n.feishu_push_all }}</code><br>
+          关键词：<code>{{ n.feishu_keywords | join('、') or '（无）' }}</code>
+        {% endif %}
+      </td>
+      <td>
+        {% set key = forum.forum_id + ':' + n.channel_type %}
+        {% set st = notifier_stats.get(key) %}
+        <span class="muted">成功 {{ st.sent if st else 0 }} / 失败 {{ st.failed if st else 0 }}</span><br>
+        <button type="button" onclick="testChannel('{{ forum.forum_id }}', {{ loop.index0 }})">测试连通性</button>
+        <form method="post" action="{{ url_for('delete_notifier') }}"
+              onsubmit="return confirm('确认删除该渠道？')" style="display:inline">
+          <input type="hidden" name="forum_id" value="{{ forum.forum_id }}">
+          <input type="hidden" name="index" value="{{ loop.index0 }}">
+          <button class="danger" type="submit">删除</button>
+        </form>
+      </td>
+    </tr>
+    {% else %}
+    <tr><td colspan="3" class="muted">尚未配置任何通知渠道</td></tr>
+    {% endfor %}
+  </table>
+
+  <h3>新增通知渠道</h3>
+  <form method="post" action="{{ url_for('add_notifier') }}">
+    <input type="hidden" name="forum_id" value="{{ forum.forum_id }}">
+    <div class="row">
+      <div>
+        <label>渠道类型</label>
+        <select name="notifier_type" id="nt-{{ forum.forum_id }}" onchange="toggleFields('{{ forum.forum_id }}')">
+          <option value="feishu">飞书 Webhook</option>
+          <option value="telegram">Telegram Bot</option>
+        </select>
+      </div>
+      <div id="feishu-fields-{{ forum.forum_id }}">
+        <label>Webhook URL</label>
+        <input type="text" name="feishu_webhook_url" placeholder="https://open.feishu.cn/open-apis/bot/v2/hook/...">
+      </div>
+      <div id="telegram-fields-{{ forum.forum_id }}" style="display:none">
+        <label>Bot Token</label>
+        <input type="text" name="telegram_bot_token" placeholder="123456:ABC...">
+      </div>
+    </div>
+    <div id="feishu-extra-{{ forum.forum_id }}">
+      <label>关键词（英文逗号分隔，留空表示推送全部新帖）</label>
+      <input type="text" name="feishu_keywords" placeholder="Docker,NAS,求助">
+      <label><input type="checkbox" name="feishu_push_all"> 忽略关键词，推送全部新帖</label>
+    </div>
+    <p><button type="submit">新增渠道</button></p>
+  </form>
+</div>
+{% else %}
+<div class="card"><p class="muted">配置文件里还没有任何论坛。</p></div>
+{% endfor %}
+
+<script>
+function toggleFields(forumId) {
+  const type = document.getElementById('nt-' + forumId).value;
+  document.getElementById('feishu-fields-' + forumId).style.display = type === 'feishu' ? '' : 'none';
+  document.getElementById('telegram-fields-' + forumId).style.display = type === 'telegram' ? '' : 'none';
+  document.getElementById('feishu-extra-' + forumId).style.display = type === 'feishu' ? '' : 'none';
+}
+async function testChannel(forumId, index) {
+  const body = new URLSearchParams({forum_id: forumId, index: index});
+  const resp = await fetch("{{ url_for('test_notifier') }}", {method: 'POST', body});
+  const data = await resp.json();
+  alert((data.ok ? '✅ ' : '❌ ') + data.message);
+}
+</script>
+{% endblock %}

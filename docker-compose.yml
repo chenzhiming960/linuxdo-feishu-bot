@@ -1,15 +1,18 @@
-version: "3.8"
 services:
-  linuxdo-feishu-bot:
+  linuxdo-monitor:
     build: .
-    image: linuxdo-feishu-bot:latest
-    container_name: linuxdo-feishu-bot
+    image: linuxdo-monitor:latest
+    container_name: linuxdo-monitor
     restart: always
     environment:
       CONFIG_PATH: /config/config.json
-      DB_PATH: /data/rss_posts.db
+      DB_PATH: /data/monitor.db
       LOG_DIR: /logs
+    ports:
+      - "8080:8080"
     volumes:
       - ./config:/config
       - ./data:/data
       - ./logs:/logs
+    # 覆盖默认 CMD 可开启 Web 管理页：
+    # command: ["linuxdo-monitor", "run", "--config", "/config/config.json", "--web-port", "8080"]

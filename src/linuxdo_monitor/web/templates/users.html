@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block title %}用户统计 - LinuxDo 监控{% endblock %}
+{% block content %}
+
+<div class="card">
+  <h2>总览</h2>
+  <table>
+    <tr>
+      {% for key, value in overall.items() %}
+      <th>{{ key }}</th>
+      {% endfor %}
+    </tr>
+    <tr>
+      {% for key, value in overall.items() %}
+      <td>{{ value }}</td>
+      {% endfor %}
+    </tr>
+  </table>
+</div>
+
+{% for item in forums %}
+<div class="card">
+  <h2>{{ item.forum.name }} <span class="badge">{{ item.forum.forum_id }}</span></h2>
+  <table>
+    <tr>
+      {% for key, value in item.stats.items() %}<th>{{ key }}</th>{% endfor %}
+    </tr>
+    <tr>
+      {% for key, value in item.stats.items() %}<td>{{ value }}</td>{% endfor %}
+    </tr>
+  </table>
+
+  <h3>订阅用户（{{ item.users | length }}）</h3>
+  <table>
+    <tr><th>chat_id</th><th>渠道</th><th>注册时间</th></tr>
+    {% for u in item.users %}
+    <tr><td><code>{{ u.chat_id }}</code></td><td>{{ u.channel }}</td><td>{{ u.created_at }}</td></tr>
+    {% else %}
+    <tr><td colspan="3" class="muted">暂无用户</td></tr>
+    {% endfor %}
+  </table>
+
+  <h3>已屏蔽用户（{{ item.blocked | length }}）</h3>
+  <table>
+    <tr><th>chat_id</th><th>渠道</th><th>屏蔽时间</th></tr>
+    {% for u in item.blocked %}
+    <tr><td><code>{{ u.chat_id }}</code></td><td>{{ u.channel }}</td><td>{{ u.blocked_at }}</td></tr>
+    {% else %}
+    <tr><td colspan="3" class="muted">无</td></tr>
+    {% endfor %}
+  </table>
+
+  <h3>关键词热度</h3>
+  <table>
+    <tr><th>关键词</th><th>通知次数</th></tr>
+    {% for k in item.keywords %}
+    <tr><td><code>{{ k.keyword or '（订阅全部）' }}</code></td><td>{{ k.cnt }}</td></tr>
+    {% else %}
+    <tr><td colspan="2" class="muted">暂无数据</td></tr>
+    {% endfor %}
+  </table>
+</div>
+{% endfor %}
+{% endblock %}

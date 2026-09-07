@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}SQL 查询 - LinuxDo 监控{% endblock %}
+{% block content %}
+
+<div class="card">
+  <h2>SQL 查询</h2>
+  <p class="muted">
+    当前模式：
+    {% if is_admin %}<span class="badge ok">管理员（可写）</span>{% else %}<span class="badge">只读</span>{% endif %}
+  </p>
+
+  <form method="post">
+    <label>SQL 语句</label>
+    <textarea name="sql" placeholder="SELECT * FROM posts ORDER BY created_at DESC LIMIT 20">{{ sql }}</textarea>
+    {% if not is_admin %}
+    <div class="row">
+      <div>
+        <label>管理员密码（解锁写操作）</label>
+        <input type="password" name="admin_password" placeholder="留空则保持只读">
+      </div>
+    </div>
+    {% endif %}
+    <p><button type="submit">执行</button></p>
+  </form>
+
+  {% if error %}<div class="flash error">{{ error }}</div>{% endif %}
+  {% if affected is not none %}<div class="flash success">影响行数：{{ affected }}</div>{% endif %}
+
+  {% if columns %}
+  <table>
+    <tr>{% for c in columns %}<th>{{ c }}</th>{% endfor %}</tr>
+    {% for row in rows %}
+    <tr>{% for c in columns %}<td>{{ row[c] }}</td>{% endfor %}</tr>
+    {% endfor %}
+  </table>
+  <p class="muted">共 {{ rows | length }} 行</p>
+  {% endif %}
+</div>
+{% endblock %}
