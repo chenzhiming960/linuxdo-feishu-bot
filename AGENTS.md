@@ -72,3 +72,15 @@ src/linuxdo_monitor/
 
 统一在 `pyproject.toml`（Python ≥ 3.11）：python-telegram-bot、feedparser、apscheduler、pydantic、click、flask、requests。
 `requirements.txt` 仅作 `pip install -r` 便捷入口，与 pyproject 保持同步。
+
+## GitHub 操作（gh CLI）
+
+- 本机已安装 gh（v2.98.0）并登录账号 `chenzhiming960`，远端仓库 `chenzhiming960/linuxdo-feishu-bot`（默认分支 `main`）
+- **本机直连 github.com 会失败**（Connection reset），gh 与 git 均需走本地代理 `http://127.0.0.1:7897`：
+  ```bash
+  HTTPS_PROXY=http://127.0.0.1:7897 gh pr list          # gh：环境变量方式
+  git -c http.proxy=http://127.0.0.1:7897 push origin main   # git：命令级配置，勿改全局
+  ```
+- 常用：`gh pr list/view/create`、`gh issue list/view`、`gh run list/view`（CI）、`gh repo view`
+- 推送等对远端可见的操作仍需用户确认后执行
+
